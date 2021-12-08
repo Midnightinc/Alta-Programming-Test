@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe46e806bcafaa54ab48591318af0a35, type: 3}
+  m_Name: Red World Brush
+  m_EditorClassIdentifier: 
+  tilePrefab: {fileID: 3072281637559697772, guid: b20bc6022c2e02549a31183ae2ffdf6d, type: 3}
+  tileBlocked: 1

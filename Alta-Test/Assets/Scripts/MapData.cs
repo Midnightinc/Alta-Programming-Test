@@ -13,5 +13,13 @@ namespace Assets.Scripts
         public string mapName;
 
         public Tile[] SavedMap;
+        public int tileSize;
+
+        public void SetData(Map map)
+        {
+            mapName = map.mapName;
+            SavedMap = map.Grid;
+            tileSize = map.tileSize;
+        }
     }
 }

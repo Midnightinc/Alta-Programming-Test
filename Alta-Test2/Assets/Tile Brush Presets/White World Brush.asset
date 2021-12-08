@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 820ab0d19103fa04198b94ff2f4f4c29, type: 3}
-  m_Name: New Map Data
+  m_Script: {fileID: 11500000, guid: fe46e806bcafaa54ab48591318af0a35, type: 3}
+  m_Name: White World Brush
   m_EditorClassIdentifier: 
-  mapName: 
-  SavedMap: []
+  tilePrefab: {fileID: 4984539767529155463, guid: bb553aa4b63b89b43b54a50cd2fbd09d, type: 3}
+  tileBlocked: 0
