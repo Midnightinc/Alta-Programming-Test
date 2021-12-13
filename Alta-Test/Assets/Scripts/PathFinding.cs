@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts
 {
     public static class PathFinding
     {
-        public static List<Tile> AStar(Map map, Tile start, Tile goal, int heuristic)
+
+        public delegate float Heuristic(Vector2 x, Vector2 y);
+        public delegate List<Tile> GetNeighbours(MapData map, int x, int y);
+
+
+
+        public static List<Tile> AStar(MapData map, Tile start, Tile goal, Heuristic heuristic, GetNeighbours neighbourDelegate, bool platformer = false)
         {
-            //setup
-            Tile[] grid = map.Grid;
 
             List<Tile> openSet = new List<Tile>();
             openSet.Add(start);
@@ -20,7 +20,11 @@ namespace Assets.Scripts
 
             if (start == null || goal == null)
             {
-                Debug.LogWarning($" Start is set = {start} // Goal is set = {goal}");
+                return null;
+            }
+
+            if (start.data.isBlocked || goal.data.isBlocked)
+            {
                 return null;
             }
 
@@ -30,7 +34,7 @@ namespace Assets.Scripts
             while (openSet.Count > 0)
             {
                 breakoutCount++;
-                openSet.Sort((x, y) => x.fScore.CompareTo(y.fScore)); //sort openset by fcost
+                openSet.Sort((x, y) => x.pathData.fScore.CompareTo(y.pathData.fScore)); //sort openset by fcost
 
                 currentNode = openSet[0];
 
@@ -40,11 +44,11 @@ namespace Assets.Scripts
 
                 for (int i = 0; i < openSet.Count; i++)
                 {
-                    if (openSet[i].isBlocked)
+                    if (openSet[i].data.isBlocked)
                     {
                         continue;
                     }
-                    if (openSet[i].fScore < currentNode.fScore || openSet[i].fScore == currentNode.fScore && openSet[i].Distance(goal) < currentNode.Distance(goal))
+                    if (openSet[i].pathData.fScore < currentNode.pathData.fScore || openSet[i].pathData.fScore == currentNode.pathData.fScore &&  heuristic(openSet[i].WorldPosition, goal.WorldPosition) < heuristic(openSet[i].WorldPosition, goal.WorldPosition))
                     {
                         currentNode = openSet[i];
                     }
@@ -55,39 +59,51 @@ namespace Assets.Scripts
 
                 if (currentNode == goal)
                 {
-                    Debug.Log($"Path Found");
-
                     return GatherPath(start, goal);
                 }
 
-                foreach (var neighbour in currentNode.neighbours)
+                foreach (var neighbour in neighbourDelegate(map, currentNode.gridX, currentNode.gridY))
                 {
-                    if (neighbour.isBlocked)
-                    {
-                        Debug.Log($"unwalkable found");
-                    }
 
-                    if (neighbour.isBlocked || closedSet.Contains(neighbour))
+                    if (neighbour.data.isBlocked || closedSet.Contains(neighbour))
                     {
                         continue;
                     }
 
-                    float cost = currentNode.gScore + currentNode.Distance(goal);
-                    if (cost < neighbour.gScore || !openSet.Contains(neighbour))
+                    if (currentNode.pathData == null)
                     {
-                        neighbour.gScore = cost;
-                        neighbour.hScore = neighbour.Distance(goal);
-                        neighbour.previous = currentNode;
+                        Debug.Log($"currentNode.pathData null?");
+                    }
 
-                        if (!openSet.Contains(neighbour) && !neighbour.isBlocked)
+                    float cost = currentNode.pathData.gScore + heuristic(currentNode.WorldPosition, goal.WorldPosition);
+                    if (cost < neighbour.pathData.gScore || !openSet.Contains(neighbour))
+                    {
+                        neighbour.pathData.gScore = cost;
+                        neighbour.pathData.hScore = heuristic(neighbour.WorldPosition, goal.WorldPosition);
+                        neighbour.pathData.previous = currentNode;
+
+                        if (platformer)
                         {
-                            openSet.Add(neighbour);
+                            if (!openSet.Contains(neighbour) && neighbour.data.isBlocked)
+                            {
+                                openSet.Add(neighbour);
+                            }
                         }
+                        else
+                        {
+                            if (!openSet.Contains(neighbour) && !neighbour.data.isBlocked)
+                            {
+                                openSet.Add(neighbour);
+                            }
+                        }
+
                     }
                 }
             }
             return null;
         }
+
+
 
         private static List<Tile> GatherPath(Tile start, Tile end)
         {
@@ -97,7 +113,7 @@ namespace Assets.Scripts
             while (currentNode != start)
             {
                 path.Add(currentNode);
-                currentNode = currentNode.previous;
+                currentNode = currentNode.pathData.previous;
             }
             path.Reverse();
             return path;

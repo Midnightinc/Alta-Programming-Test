@@ -1,62 +1,50 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts
 {
+    public class PathPointData
+    {
+        public Tile previous;
+        public float gScore;
+        public float hScore;
+        public float fScore => gScore + hScore;
+    }
+
+
+
     [System.Serializable]
     public class Tile
     {
         //world position of bottom left point on tile
-        private Vector2 worldPosition;
-        private int     tileSize;
-        private int     index;
+        public Vector2 InverseWorldPosition => new Vector2(gridY * tileSize, gridX * tileSize);
 
-        public List<Tile> neighbours = new List<Tile>();
+        public Vector2 WorldPosition => new Vector2(gridX * tileSize, gridY * tileSize);
+        private int tileSize;
 
-        public Vector2 WorldPosition => worldPosition;
-        public bool isBlocked = false;
+        public int gridX, gridY; // grid coordinates
 
-        public float gScore;
-        public float hScore;
-        public float fScore => gScore + hScore;
+        public TileData data;
+        public PathPointData pathData;
 
-        public Tile previous;
+        public bool isHighlighted;
+        public bool isSelected;
 
-
-        public float Distance(Tile goal)
+        public Tile(int gridX, int gridY, int tileSize)
         {
-            var pos = worldPosition / tileSize;
-            var goalPos = goal.worldPosition / tileSize;
-            int dstX = (int)Mathf.Abs(pos.x - goalPos.x);
-            int dstY = (int)Mathf.Abs(pos.y - goalPos.y);
-
-            if (dstX < dstY)
-            {
-                return 14 * dstY + 10 * (dstX - dstY);
-            }
-            else
-            {
-                return 14 * dstX + 10 * (dstY - dstX);
-            }
-        }
-
-
-        public Tile(Vector2 worldPosition, int index, int tileSize, int gridSize)
-        {
-            worldPosition.x += (index % gridSize) * tileSize;
-            worldPosition.y += (index / gridSize) * tileSize;
-
-            this.worldPosition = worldPosition;
-            this.index = index;
+            this.gridX = gridX;
+            this.gridY = gridY;
             this.tileSize = tileSize;
+            data = new TileData();
+            pathData = new PathPointData();
         }
 
+
+
+        #region Gizmos Draw Methods
         public void DrawSolid(Color color)
         {
             Gizmos.color = color;
-            Vector3 position = new Vector3(worldPosition.y, worldPosition.x);
-            position.x += tileSize / 2;
-            position.y += tileSize / 2;
+            Vector3 position = new Vector3(WorldPosition.y + (tileSize * .5f), WorldPosition.x + (tileSize * .5f));
             Gizmos.DrawCube(position, new Vector3(tileSize, tileSize, 0));
         }
 
@@ -64,10 +52,9 @@ namespace Assets.Scripts
         {
             Gizmos.color = color;
 
-            //initialize gizmo drawing properties
             Vector3 from, to;
-            from = worldPosition;
-            to = worldPosition;
+            from = InverseWorldPosition;
+            to = InverseWorldPosition;
 
             to.x += tileSize;
             Gizmos.DrawLine(from, to); // bottom left to bottom right
@@ -84,5 +71,7 @@ namespace Assets.Scripts
             to.y -= tileSize;
             Gizmos.DrawLine(from, to); // top left to bottom left
         }
+        #endregion
+
     }
 }

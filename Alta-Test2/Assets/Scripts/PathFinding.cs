@@ -34,11 +34,12 @@ namespace Assets.Scripts
             while (openSet.Count > 0)
             {
                 breakoutCount++;
-                openSet.Sort((x, y) => x.pathData.fScore.CompareTo(y.pathData.fScore)); //sort openset by fcost
+                //sort openset by fcost
+                openSet.Sort((x, y) => x.pathData.fScore.CompareTo(y.pathData.fScore));
 
                 currentNode = openSet[0];
 
-
+                //get first node to exaluate
                 openSet.RemoveAt(0);
                 closedSet.Add(currentNode);
 
@@ -48,7 +49,7 @@ namespace Assets.Scripts
                     {
                         continue;
                     }
-                    if (openSet[i].pathData.fScore < currentNode.pathData.fScore || openSet[i].pathData.fScore == currentNode.pathData.fScore &&  heuristic(openSet[i].WorldPosition, goal.WorldPosition) < heuristic(openSet[i].WorldPosition, goal.WorldPosition))
+                    if (heuristic(openSet[i].WorldPosition, goal.WorldPosition) < heuristic(openSet[i].WorldPosition, goal.WorldPosition))
                     {
                         currentNode = openSet[i];
                     }

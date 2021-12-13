@@ -1,25 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using System.Collections.Generic;
 
 namespace Assets.Scripts
 {
-    [CreateAssetMenu(fileName = "New Map Data", menuName = "Maps/Data")]
-    public class MapData : ScriptableObject
+    [System.Serializable]
+    public class MapData
     {
+
         public string mapName;
 
-        public Tile[] SavedMap;
         public int tileSize;
+        public int gridSize;
+        public List<Tile> savedMap;
 
-        public void SetData(Map map)
+        public int GetIndexFromXY(int x, int y)
         {
-            mapName = map.mapName;
-            SavedMap = map.Grid;
-            tileSize = map.tileSize;
+            return x * gridSize + y;
+        }
+
+
+        public MapData(MapData data)
+        {
+            this.mapName =  data.mapName;
+            this.tileSize = data.tileSize;
+            this.gridSize = data.gridSize;
+            this.savedMap = data.savedMap;
         }
     }
 }

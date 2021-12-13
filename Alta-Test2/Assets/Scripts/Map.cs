@@ -85,12 +85,19 @@ public class Map : MonoBehaviour
         Initialize(true, JsonMapTool.LoadMap(data.mapName));
         for (int i = 0; i < data.savedMap.Count; i++)
         {
-            if (data.savedMap[i].data.gameObject != null)
+            if (data.savedMap[i].data.gameObjectName != string.Empty)
             {
                 Vector3 position = Vector3.zero;
                 position.y += (data.savedMap[i].gridX * data.tileSize) + (data.tileSize * 0.5f);
                 position.x += (data.savedMap[i].gridY * data.tileSize) + (data.tileSize * 0.5f);
-                Instantiate(data.savedMap[i].data.gameObject, position, Quaternion.identity, transform);
+                GameObject toSpawn = Resources.Load<GameObject>(data.savedMap[i].data.gameObjectName);
+
+                if (toSpawn == null)
+                {
+                    print($"Failed to instantiate loaded game object");
+                    continue;
+                }
+                Instantiate(toSpawn, position, Quaternion.identity, transform);
             }
         }
     }

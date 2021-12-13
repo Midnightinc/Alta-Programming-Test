@@ -11,7 +11,6 @@ namespace Assets.Scripts
         public int tileSize;
         public int gridSize;
         public List<Tile> savedMap;
-        public MapType mapType;
 
         public int GetIndexFromXY(int x, int y)
         {
@@ -25,12 +24,6 @@ namespace Assets.Scripts
             this.tileSize = data.tileSize;
             this.gridSize = data.gridSize;
             this.savedMap = data.savedMap;
-        }
-
-        public enum MapType
-        {
-            TopDown,
-            Platformer
         }
     }
 }
